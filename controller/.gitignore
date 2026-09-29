@@ -1,0 +1,28 @@
+# dot files
+/.vscode/launch.json
+/.settings
+/.eide/log
+/.eide.usr.ctx.json
+
+# project out
+/build
+/bin
+/obj
+/out
+
+# eide template
+*.ept
+*.eide-template
+
+# ---- 芯片支持包：体积大、各人本地用 EIDE 自己装（见 README）----
+/.pack
+/.cmsis
+
+# ---- Keil 个人配置 / 编译中间产物 ----
+*.uvguix.*
+*.uvoptx
+/Objects
+/Listings
+
+# 本机专属的 VSCode 配置（含本机绝对路径），不发布
+/.vscode/settings.json

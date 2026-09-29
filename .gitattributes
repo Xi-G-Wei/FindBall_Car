@@ -1,0 +1,9 @@
+# 统一换行符：仓库里一律存 LF，检出时按平台处理
+# 不加这个的话，Windows 上每次改文件都会产生一堆"整文件都变了"的假 diff
+* text=auto
+
+# 二进制文件不要动
+*.kmodel binary
+*.jpg binary
+*.png binary
+*.pdf binary

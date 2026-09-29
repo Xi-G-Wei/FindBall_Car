@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "STM32",
+            "includePath": [
+                "${workspaceFolder}/Hardware",
+                "${workspaceFolder}/User",
+                "${workspaceFolder}/Library",
+                "${workspaceFolder}/System",
+                "${workspaceFolder}/Start",
+                "${workspaceFolder}/.cmsis/include"
+            ],
+            "defines": [
+                "USE_STDPERIPH_DRIVER",
+                "STM32F10X_MD"
+            ],
+            "intelliSenseMode": "gcc-arm",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
