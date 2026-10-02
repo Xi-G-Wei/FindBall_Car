@@ -97,7 +97,7 @@ uint8_t USART3_ReadByte(uint8_t *Data)
   *    主控会朝一个假方向冲出去。所以这里逐字符校验，一个非法字符就整行作废。
   *
   */
-static uint8_t Parse_Line(int16_t *x, int16_t *y)
+static uint8_t Parse_Line(int16_t *x, int16_t *y,uint8_t *cmd)
 {
     uint8_t i;
     uint8_t seen_comma = 0;
@@ -106,6 +106,28 @@ static uint8_t Parse_Line(int16_t *x, int16_t *y)
     if(Line_Buf[0] == '\0')
     {
         return UART3_MSG_BAD;                   /* 空行 */
+    }
+
+    //收到指令
+    if(Line_Buf[0]=='M')
+    {
+        //判断格式错误出现乱码
+        if(Line_Buf[1] == '\0' || Line_Buf[2] != '\0')
+        {
+            return UART3_MSG_BAD;
+        }
+        switch(Line_Buf[1])
+        {
+            case 'f': *cmd=ROBOT_CMD_FWD;    break;
+            case 'b': *cmd=ROBOT_CMD_BACK;   break;
+            case 'l': *cmd=ROBOT_CMD_LEFT;   break;
+            case 'r': *cmd=ROBOT_CMD_RIGHT;  break;
+            case 's': *cmd=ROBOT_CMD_STOP;   break;
+            case 'M': *cmd=ROBOT_CMD_MANUAL; break;
+            case 'A': *cmd=ROBOT_CMD_AUTO;   break;
+            default:   return UART3_MSG_BAD;
+        }
+        return UART3_MSG_CMD;
     }
 
     /* ---- 坐标："数字,数字" ---- */
@@ -158,7 +180,7 @@ static uint8_t Parse_Line(int16_t *x, int16_t *y)
   * 一次调用里如果收了好几行，只留 最后一行 的结果 ——
   * 前面的命令已经过期了，拿旧的去开车等于用历史位置导航。
   */
-uint8_t USART3_Poll(int16_t *x, int16_t *y)
+uint8_t USART3_Poll(int16_t *x, int16_t *y,uint8_t *cmd)
 {
     uint8_t b;
     uint8_t result = UART3_MSG_NONE;
@@ -170,7 +192,7 @@ uint8_t USART3_Poll(int16_t *x, int16_t *y)
             if(Line_Len > 0)
             {
                 Line_Buf[Line_Len] = '\0';
-                result = Parse_Line(x, y);      /* 覆盖式，只留最新 */
+                result = Parse_Line(x, y,cmd);      /* 覆盖式，只留最新 */
                 Line_Len = 0;
             }
             /* Line_Len == 0 说明是 "\r\n" 里的第二个字符，忽略 */
@@ -217,7 +239,7 @@ void USART3_SendStr(const char *s)
 
 /**
   * @brief  发一个十进制整数（阻塞），支持负数
-  * @note   调试打印用。坐标都是正数，负号是给以后别的调试信息留的
+  * @note   调试打印用 坐标都是正数，负号是给以后别的调试信息留的
   */
 void USART3_SendNum(int32_t v)
 {
